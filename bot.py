@@ -2,15 +2,14 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
 from keyboards import weeks_keyboard, top_week_keyboard, lower_week_keyboard, main_keyboard
-from clas import BotDB
+from bd_user_id import check_user_id
+
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token="5943456648:AAHnaCeOanZYMK4T8mKHlRIg267Bb2_C6PA")
 dp = Dispatcher(bot)
-
-BotDB = BotDB('top_week.db')
 
 
 @dp.message_handler(commands=["start"])
@@ -24,8 +23,16 @@ async def help(message: types.Message):
     await message.answer("Команды: /hometask", reply_markup=main_keyboard)
 
 
+@dp.message_handler(commands=["add"])
+async def add_hometask(message: types.Message):
+    if check_user_id(message.from_user.id):
+        await message.answer('Вы можете редактировать домашку')
+    else:
+        await message.answer(message.from_user.id)
+
+
 @dp.message_handler(commands=["remove_keyboard"])
-async def help(message: types.Message):
+async def remove_keyboard(message: types.Message):
     await message.answer("Клавиатура скрыта.", reply_markup=types.ReplyKeyboardRemove())
 
 
@@ -49,7 +56,7 @@ async def lower_week_command(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'top_week_monday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.monday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, 'п', reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
@@ -129,5 +136,8 @@ async def help(message: types.Message):
 async def main():
     await dp.start_polling(bot)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+try:
+    if __name__ == "__main__":
+        asyncio.run(main())
+except Exception as ex:
+    print(ex)
