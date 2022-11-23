@@ -4,9 +4,7 @@ from aiogram import Bot, Dispatcher, types
 from keyboards import weeks_keyboard, top_week_keyboard, lower_week_keyboard, main_keyboard
 from bd_user_id import check_user_id
 from work_with_bd import BotDB
-from googletrans import Translator
-
-translater = Translator()
+from deep_translator import GoogleTranslator
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +31,8 @@ async def add_hometask(message: types.Message):
     if check_user_id(message.from_user.id):
         stroka = message.text.split()
         stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 2])
-        BotDB.add_homework(f'"{stroka[1].lower()}"', f'"{stroka[2].lower()}"', f'"{stroka_with_task}"')
+        week_day_ru = GoogleTranslator(source='ru', target='en').translate(stroka[1])
+        BotDB.add_homework(f'"{week_day_ru.lower()}"', f'"{stroka[2].lower()}"', f'"{stroka_with_task}"')
     else:
         await message.answer('No')
 
