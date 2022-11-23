@@ -3,7 +3,10 @@ import logging
 from aiogram import Bot, Dispatcher, types
 from keyboards import weeks_keyboard, top_week_keyboard, lower_week_keyboard, main_keyboard
 from bd_user_id import check_user_id
-from clas import BotDB
+from work_with_bd import BotDB
+from googletrans import Translator
+
+translater = Translator()
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
@@ -11,7 +14,8 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token="5943456648:AAHnaCeOanZYMK4T8mKHlRIg267Bb2_C6PA")
 dp = Dispatcher(bot)
 
-BotDB = BotDB(r'top_week.db')
+BotDB = BotDB(r'Databases/top_week.db')
+
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
@@ -27,9 +31,11 @@ async def help(message: types.Message):
 @dp.message_handler(commands=["add"])
 async def add_hometask(message: types.Message):
     if check_user_id(message.from_user.id):
-        await message.answer('Вы можете редактировать домашку')
+        stroka = message.text.split()
+        stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 2])
+        BotDB.add_homework(f'"{stroka[1].lower()}"', f'"{stroka[2].lower()}"', f'"{stroka_with_task}"')
     else:
-        await message.answer(message.from_user.id)
+        await message.answer('No')
 
 
 @dp.message_handler(commands=["remove_keyboard"])
