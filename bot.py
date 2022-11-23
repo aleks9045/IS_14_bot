@@ -33,7 +33,7 @@ async def add_hometask(message: types.Message):
     if check_user_id(message.from_user.id):
         stroka = message.text.split()
         stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 2])
-        BotDB.add_homework(f'"{stroka[1].lower()}"', f'"{stroka[2].lower()}"', f'"{stroka_with_task}"')
+        BotDB_top.add_homework_top(f'"{stroka[1].lower()}"', f'"{stroka[2].lower()}"', f'"{stroka_with_task}"')
     else:
         await message.answer('No')
 
