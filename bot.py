@@ -63,37 +63,37 @@ async def lower_week_command(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'top_week_monday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.monday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.monday_top(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.tuesday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.tuesday_top(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_wednesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.wednesday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.wednesday_top(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_thursday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.thursday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.thursday_top(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_friday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.friday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.friday_top(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_saturday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.saturday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.saturday_top(), reply_markup=main_keyboard)
 
 
 # Тут короче разделение недель, чтоб код понятней был
