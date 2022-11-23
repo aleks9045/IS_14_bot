@@ -3,7 +3,7 @@ import logging
 from aiogram import Bot, Dispatcher, types
 from keyboards import weeks_keyboard, top_week_keyboard, lower_week_keyboard, main_keyboard
 from bd_user_id import check_user_id
-from work_with_bd import BotDB
+from work_with_topDB import BotDB_top
 from googletrans import Translator
 
 translater = Translator()
@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token="5943456648:AAHnaCeOanZYMK4T8mKHlRIg267Bb2_C6PA")
 dp = Dispatcher(bot)
 
-BotDB = BotDB(r'Databases/top_week.db')
+BotDB_top = BotDB_top(r'Databases/top_week.db')
 
 
 @dp.message_handler(commands=["start"])
@@ -63,37 +63,37 @@ async def lower_week_command(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'top_week_monday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.monday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.monday(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.tuesday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.tuesday(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_wednesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.wednesday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.wednesday(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_thursday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.thursday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.thursday(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_friday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.friday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.friday(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_saturday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.saturday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.saturday(), reply_markup=main_keyboard)
 
 
 # Тут короче разделение недель, чтоб код понятней был
