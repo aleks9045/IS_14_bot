@@ -68,7 +68,7 @@ async def dz_top(callback: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB.tuesday(), reply_markup=main_keyboard)
+    await bot.send_message(callback.from_user.id, BotDB_top.tuesday_top(), reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_wednesday')
