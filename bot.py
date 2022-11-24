@@ -16,6 +16,7 @@ dp = Dispatcher(bot)
 BotDB_top = BotDB_top(r'Databases/top_week.db')
 BotDB_lower = BotDB_lower(r'Databases/lower_week.db')
 
+
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
     await message.answer("Вас приветствует бот, созданный, чтобы говорить вам ваше домашнее задание. "
@@ -23,19 +24,50 @@ async def start(message: types.Message):
 
 
 @dp.message_handler(commands=["help"])
-async def help(message: types.Message):
-    await message.answer("Команды: /hometask", reply_markup=main_keyboard)
+async def help_me(message: types.Message):
+    await message.answer("Команды:\n"
+                         "/hometask - Раздел, где вы можете узнать домашнее задание.\n"
+                         "/about add - Раздел, где вы можете узнать, как добавить домашнее задание.\n"
+                         "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.",
+                         reply_markup=main_keyboard)
+
+
+@dp.message_handler(commands=["about_add"])
+async def add_hometask(message: types.Message):
+    await message.answer('С помощью команды /add вы можете добавлять задания, '
+                         'после команды нужно написать тип недели, день недели, предмет, и само задание. '
+                         'Пример использования:\n'
+                         '/add нижняя понедельник математика Сделать номер 128 и 129\n'
+                         '/add верхняя четверг иностранный_язык(<--внимание на нижнее подчеркивание) '
+                         'выучить словарные слова на стр. 111')
 
 
 @dp.message_handler(commands=["add"])
 async def add_hometask(message: types.Message):
     if check_user_id(message.from_user.id):
         stroka = message.text.split()
-        stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 2])
-        week_day_ru = GoogleTranslator(source='ru', target='en').translate(stroka[1])
-        BotDB_top.add_homework_top(f'"{week_day_ru.lower()}"', f'"{stroka[2].lower()}"', f'"{stroka_with_task}"')
+        if stroka[1].lower() == 'верхняя':
+            try:
+                stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
+                stroka_with_subject = stroka[3].lower()
+                week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
+                BotDB_top.add_homework_top(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
+                await message.answer('Вы успешно добавили задание.')
+            except Exception:
+                await message.answer('Произошла ошибка.')
+        elif stroka[1].lower() == 'нижняя':
+            try:
+                stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
+                stroka_with_subject = stroka[3].lower()
+                week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
+                BotDB_lower.add_homework_lower(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
+                await message.answer('Вы успешно добавили задание.')
+            except Exception:
+                await message.answer('Произошла ошибка.')
+        else:
+            await message.answer('Вы не выбрали тип недели.')
     else:
-        await message.answer('No')
+        await message.answer('Вы не можете добавлять задания.')
 
 
 @dp.message_handler(commands=["remove_keyboard"])
@@ -51,13 +83,15 @@ async def hometask(message: types.Message):
 @dp.callback_query_handler(text='top_week')
 async def top_week_command(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, 'Выберите день недели(верхняя)', reply_markup=top_week_keyboard)
+    await bot.send_message(callback_query.from_user.id, 'Выберите день недели (верхняя):',
+                           reply_markup=top_week_keyboard)
 
 
 @dp.callback_query_handler(text='lower_week')
 async def lower_week_command(callback_query: types.CallbackQuery):
     await bot.answer_callback_query(callback_query.id)
-    await bot.send_message(callback_query.from_user.id, 'Выберите день недели(нижняя)', reply_markup=lower_week_keyboard)
+    await bot.send_message(callback_query.from_user.id, 'Выберите день недели (нижняя):',
+                           reply_markup=lower_week_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_monday')
@@ -133,11 +167,6 @@ async def dz_lower(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, BotDB_lower.saturday_lower(), reply_markup=main_keyboard)
-
-
-@dp.message_handler(commands=["lower_week"])
-async def help(message: types.Message):
-    await message.answer("Выберите день недели", reply_markup=lower_week_keyboard)
 
 
 async def main():
