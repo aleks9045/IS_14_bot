@@ -25,8 +25,11 @@ class BotDB_lower:
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         text = f"""Информатика: {lst[0]}
+        
 Математика: {lst[1]}
+
 Иностранный язык: {lst[2]}
+
 Доп. занятия ИС-1"""
         return text
 
@@ -37,7 +40,9 @@ class BotDB_lower:
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         text = f"""История: {lst[0]}
+        
 Физическая культура: {lst[1]}
+
 Родной язык: {lst[2]}"""
         return text
 
@@ -48,8 +53,11 @@ class BotDB_lower:
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         text = f"""Русский язык: {lst[0]}
+        
 Физика: {lst[1]}
+
 Математика: {lst[2]}
+
 Доп. занятие ИС-1"""
         return text
 
@@ -60,8 +68,11 @@ class BotDB_lower:
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         text = f"""Литература: {lst[0]}
+        
 История: {lst[1]}
+
 Человек в современном мире: {lst[2]}
+
 Доп. занятие ИС-2"""
         return text
 
@@ -72,7 +83,9 @@ class BotDB_lower:
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         text = f"""Математика: {lst[0]}
+        
 Информатика: {lst[1]}
+
 Большие данные: {lst[2]}"""
         return text
 
@@ -83,8 +96,11 @@ class BotDB_lower:
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         text = f"""Физическая культура: {lst[0]}
+        
 Астрономия: {lst[1]}
+
 Физика: {lst[2]}
+
 Доп. занятие ИС-2"""
         return text
 
