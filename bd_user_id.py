@@ -10,4 +10,3 @@ def check_user_id(user_id):
         return True
     else:
         return False
-

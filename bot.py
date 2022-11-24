@@ -32,6 +32,11 @@ async def help_me(message: types.Message):
                          reply_markup=main_keyboard)
 
 
+@dp.message_handler(commands=["my_id"])
+async def my_id(message: types.Message):
+    await message.answer(message.from_user.id)
+
+
 @dp.message_handler(commands=["about_add"])
 async def add_hometask(message: types.Message):
     await message.answer('С помощью команды /add вы можете добавлять задания, '
