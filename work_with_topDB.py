@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class BotDB_top:
 
     def __init__(self, db_file):
