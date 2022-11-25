@@ -25,7 +25,7 @@ class BotDB_lower:
         self.cursor.execute(f"PRAGMA table_info({week_day})")  # извлекаем из БД строку с названием колонок
         lst_subject = [i[1] for i in self.cursor.fetchall()]  # преобразование строки предметов в список для вывода (и избавление от лишнего)
 
-        self.cursor.execute(f"SELECT * FROM friday")  # обращаемся к БД
+        self.cursor.execute(f"SELECT * FROM {week_day}")  # обращаемся к БД
         result = self.cursor.fetchone()  # берём строку с домашнимм задание
         question_list.append(result)
         for question in question_list:  # в этих вложенных циклах мы преобразуем данные с БД о домашнем задании в список (также убераем лишнее)
