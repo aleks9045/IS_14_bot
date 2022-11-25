@@ -112,7 +112,7 @@ async def add_hometask(message: types.Message):
                 stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
                 stroka_with_subject = stroka[3].lower()
                 week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                await BotDB_top.add_homework_top(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
+                BotDB_top.add_homework_top(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
                 await message.answer('Вы успешно добавили задание.')
             except Exception as ex:
                 print(ex)
@@ -122,7 +122,7 @@ async def add_hometask(message: types.Message):
                 stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
                 stroka_with_subject = stroka[3].lower()
                 week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                await BotDB_lower.add_homework_lower(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
+                BotDB_lower.add_homework_lower(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
                 await message.answer('Вы успешно добавили задание.')
             except Exception as ex:
                 print(ex)

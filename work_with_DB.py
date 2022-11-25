@@ -8,12 +8,12 @@ class BotDB_top:
         self.connection = sqlite3.connect(db_file)
         self.cursor = self.connection.cursor()
 
-    def add_homework_top(self, week_days, subject, homework):
+    def add_homework_top(self, week_day, subject, homework):
         """добавляем домашнее задание в БД
         аргументы: week_days -> (например monday или friday)
         subject -> (например Математика или Иностранный_язык. Вместо пробелов в названии предметов ставится _ (нижнеее подчёркивание)
         homework -> сам текст с домашним заданием"""
-        self.cursor.execute(f"""UPDATE {week_days} SET {subject} = {homework}""")
+        self.cursor.execute(f"""UPDATE {week_day} SET {subject} = {homework}""")
         return self.connection.commit()
 
     def get_homework_top(self, week_day):
@@ -51,12 +51,12 @@ class BotDB_lower:
         self.connection = sqlite3.connect(db_file)
         self.cursor = self.connection.cursor()
 
-    def add_homework_lower(self, week_days, subject, homework):
+    def add_homework_lower(self, week_day, subject, homework):
         """добавляем домашнее задание в БД
         аргументы: week_days -> (например monday или friday)
         subject -> (например Математика или Иностранный_язык. Вместо пробелов в названии предметов ставится _ (нижнеее подчёркивание)
         homework -> сам текст с домашним заданием"""
-        self.cursor.execute(f"""UPDATE {week_days} SET {subject} = {homework}""")
+        self.cursor.execute(f"""UPDATE {week_day} SET {subject} = {homework}""")
         return self.connection.commit()
 
     def get_homework_lower(self, week_day):
