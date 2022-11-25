@@ -8,103 +8,36 @@ class BotDB_top:
         self.connection = sqlite3.connect(db_file)
         self.cursor = self.connection.cursor()
 
-    def add_homework_top(self, week_day, subject, homework):
+    def add_homework_top(self, week_days, subject, homework):
         """добавляем домашнее задание в БД
         аргументы: week_days -> (например monday или friday)
         subject -> (например Математика или Иностранный_язык. Вместо пробелов в названии предметов ставится _ (нижнеее подчёркивание)
         homework -> сам текст с домашним заданием"""
-        self.cursor.execute(f"""UPDATE {week_day} SET {subject} = {homework}""")
+        self.cursor.execute(f"""UPDATE {week_days} SET {subject} = {homework}""")
         return self.connection.commit()
 
-    #  отдельные методы на вывод верхней недели =======================================================================================================
+    def get_homework_top(self, week_day):
+        """вывод домашнего задания из БД
+        week_day - день недели. например monday или friday (пишем на английском)"""
+        question_list = [] # список для преобразования названий предметов
+        lst_homework = [] # список для вывода готовой информации о домашнем задании
 
-    def monday_top(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM monday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Математика: {lst[0]}
+        self.cursor.execute(f"PRAGMA table_info({week_day})") # извлекаем из БД строку с названием колонок
+        lst_subject = [i[1] for i in self.cursor.fetchall()] # преобразование строки предметов в список для вывода (и избавление от лишнего)
 
-Информатика: {lst[1]}
+        self.cursor.execute(f"SELECT * FROM {week_day}") # обращаемся к БД
+        result = self.cursor.fetchone() # берём строку с домашнимм задание
+        question_list.append(result)
+        for question in question_list: # в этих вложенных циклах мы преобразуем данные с БД о домашнем задании в список (также убераем лишнее)
+            for i in question:
+                lst_homework.append(i)
+        text = f"""{lst_subject[0]}: {lst_homework[0]}
 
-Иностранный язык: {lst[2]}
+{lst_subject[1]}: {lst_homework[1]}
 
-Доп. занятия ИС-1"""
-        return text
+{lst_subject[2]}: {lst_homework[2]}"""
+        return text # вывод домашнего задания с готовыми данными
 
-    def tuesday_top(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM tuesday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Человек в современном мире: {lst[0]}
-
-Литература: {lst[1]}
-
-История: {lst[2]}"""
-        return text
-
-    def wednesday_top(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM wednesday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Основы безопасности жизнедеятельности: {lst[0]}
-
-Русский язык: {lst[1]}
-
-Физическая культура: {lst[2]}
-
-Доп. занятие ИС-1"""
-        return text
-
-    def thursday_top(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM thursday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Иностранный язык: {lst[0]}
-
-Экологические основы природопользования: {lst[1]}
-
-Большие данные: {lst[2]}
-
-Доп. занятие ИС-2"""
-        return text
-
-    def friday_top(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM friday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Литература: {lst[0]}
-
-Математика: {lst[1]}
-
-Информатика: {lst[2]}"""
-        return text
-
-    def saturday_top(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM saturday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Физика: {lst[0]}
-
-Математика: {lst[1]}
-
-Основы финансовой грамотности: {lst[2]}
-
-Доп. занятие ИС-2"""
-        return text
-
-    # ===========================================================================================================
 
     def close_db(self):
         """Разрыв соединения с БД"""
@@ -118,103 +51,35 @@ class BotDB_lower:
         self.connection = sqlite3.connect(db_file)
         self.cursor = self.connection.cursor()
 
-    def add_homework_lower(self, week_day, subject, homework):
+    def add_homework_lower(self, week_days, subject, homework):
         """добавляем домашнее задание в БД
         аргументы: week_days -> (например monday или friday)
         subject -> (например Математика или Иностранный_язык. Вместо пробелов в названии предметов ставится _ (нижнеее подчёркивание)
         homework -> сам текст с домашним заданием"""
-        self.cursor.execute(f"""UPDATE {week_day} SET {subject} = {homework}""")
+        self.cursor.execute(f"""UPDATE {week_days} SET {subject} = {homework}""")
         return self.connection.commit()
 
-#  отдельные методы на вывод нижней недели =======================================================================================================
+    def get_homework_lower(self, week_day):
+        """вывод домашнего задания из БД
+        week_day - день недели. например monday или friday (пишем на английском)"""
+        question_list = []  # список для преобразования названий предметов
+        lst_homework = []  # список для вывода готовой информации о домашнем задании
 
-    def monday_lower(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM monday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Информатика: {lst[0]}
-        
-Математика: {lst[1]}
+        self.cursor.execute(f"PRAGMA table_info({week_day})")  # извлекаем из БД строку с названием колонок
+        lst_subject = [i[1] for i in self.cursor.fetchall()]  # преобразование строки предметов в список для вывода (и избавление от лишнего)
 
-Иностранный язык: {lst[2]}
+        self.cursor.execute(f"SELECT * FROM {week_day}")  # обращаемся к БД
+        result = self.cursor.fetchone()  # берём строку с домашнимм задание
+        question_list.append(result)
+        for question in question_list:  # в этих вложенных циклах мы преобразуем данные с БД о домашнем задании в список (также убераем лишнее)
+            for i in question:
+                lst_homework.append(i)
+        text = f"""{lst_subject[0]}: {lst_homework[0]}
 
-Доп. занятия ИС-1"""
-        return text
+{lst_subject[1]}: {lst_homework[1]}
 
-    def tuesday_lower(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM tuesday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""История: {lst[0]}
-        
-Физическая культура: {lst[1]}
-
-Родной язык: {lst[2]}"""
-        return text
-
-    def wednesday_lower(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM wednesday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Русский язык: {lst[0]}
-        
-Физика: {lst[1]}
-
-Математика: {lst[2]}
-
-Доп. занятие ИС-1"""
-        return text
-
-    def thursday_lower(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM thursday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Литература: {lst[0]}
-        
-История: {lst[1]}
-
-Человек в современном мире: {lst[2]}
-
-Доп. занятие ИС-2"""
-        return text
-
-    def friday_lower(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM friday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Математика: {lst[0]}
-        
-Информатика: {lst[1]}
-
-Большие данные: {lst[2]}"""
-        return text
-
-    def saturday_lower(self):
-        """получаем домашнее задание из БД"""
-        self.cursor.execute(f"SELECT * FROM saturday")
-        result = self.cursor.fetchone()
-        a = str(result)
-        lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        text = f"""Физическая культура: {lst[0]}
-        
-Астрономия: {lst[1]}
-
-Физика: {lst[2]}
-
-Доп. занятие ИС-2"""
-        return text
-
-#===========================================================================================================
+{lst_subject[2]}: {lst_homework[2]}"""
+        return text  # вывод домашнего задания с готовыми данными
 
     def close_db(self):
         """Разрыв соединения с БД"""
