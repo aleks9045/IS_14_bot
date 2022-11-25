@@ -105,42 +105,42 @@ async def lower_week_command(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'top_week_monday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, понедельник:\n\n\n{BotDB_top.monday_top()}',
+    await bot.send_message(callback.from_user.id, f'Верхняя неделя, понедельник:\n\n\n{BotDB_top.get_homework_top("monday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, вторник:\n\n\n{BotDB_top.tuesday_top()}',
+    await bot.send_message(callback.from_user.id, f'Верхняя неделя, вторник:\n\n\n{BotDB_top.get_homework_top("tuesday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_wednesday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, среда:\n\n\n{BotDB_top.wednesday_top()}',
+    await bot.send_message(callback.from_user.id, f'Верхняя неделя, среда:\n\n\n{BotDB_top.get_homework_top("wednesday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_thursday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, четверг:\n\n\n{BotDB_top.thursday_top()}',
+    await bot.send_message(callback.from_user.id, f'Верхняя неделя, четверг:\n\n\n{BotDB_top.get_homework_top("thursday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_friday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, пятница:\n\n\n{BotDB_top.friday_top()}',
+    await bot.send_message(callback.from_user.id, f'Верхняя неделя, пятница:\n\n\n{BotDB_top.get_homework_top("friday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_saturday')
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, суббота:\n\n\n{BotDB_top.saturday_top()}',
+    await bot.send_message(callback.from_user.id, f'Верхняя неделя, суббота:\n\n\n{BotDB_top.get_homework_top("saturday")}',
                            reply_markup=main_keyboard)
 
 
@@ -150,42 +150,42 @@ async def dz_top(callback: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'lower_week_monday')
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, понедельник:\n\n\n{BotDB_lower.monday_lower()}',
+    await bot.send_message(callback.from_user.id, f'Нижняя неделя, понедельник:\n\n\n{BotDB_lower.get_homework_lower("monday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'lower_week_tuesday')
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, вторник:\n\n\n{BotDB_lower.tuesday_lower()}',
+    await bot.send_message(callback.from_user.id, f'Нижняя неделя, вторник:\n\n\n{BotDB_lower.get_homework_lower("tuesday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'lower_week_wednesday')
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, среда:\n\n\n{BotDB_lower.wednesday_lower()}',
+    await bot.send_message(callback.from_user.id, f'Нижняя неделя, среда:\n\n\n{BotDB_lower.get_homework_lower("wednesday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'lower_week_thursday')
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, четверг:\n\n\n{BotDB_lower.thursday_lower()}',
+    await bot.send_message(callback.from_user.id, f'Нижняя неделя, четверг:\n\n\n{BotDB_lower.get_homework_lower("thursday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'lower_week_friday')
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, пятница:\n\n\n{BotDB_lower.friday_lower()}',
+    await bot.send_message(callback.from_user.id, f'Нижняя неделя, пятница:\n\n\n{BotDB_lower.get_homework_lower("friday")}',
                            reply_markup=main_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'lower_week_saturday')
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, суббота:\n\n\n{BotDB_lower.saturday_lower()}',
+    await bot.send_message(callback.from_user.id, f'Нижняя неделя, суббота:\n\n\n{BotDB_lower.get_homework_lower("saturday")}',
                            reply_markup=main_keyboard)
 
 
