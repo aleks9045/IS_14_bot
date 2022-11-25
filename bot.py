@@ -3,8 +3,8 @@ import logging
 from aiogram import Bot, Dispatcher, types
 from keyboards import weeks_keyboard, top_week_keyboard, lower_week_keyboard, main_keyboard
 from bd_user_id import check_user_id
-from work_with_topDB import BotDB_top
-from work_with_lower_DB import BotDB_lower
+from work_with_DB import BotDB_top, BotDB_lower
+from DB_photos import PhotosDB_top
 from deep_translator import GoogleTranslator
 
 # Включаем логирование, чтобы не пропустить важные сообщения
@@ -15,6 +15,7 @@ dp = Dispatcher(bot)
 
 BotDB_top = BotDB_top(r'Databases/top_week.db')
 BotDB_lower = BotDB_lower(r'Databases/lower_week.db')
+PhotosDB_top = PhotosDB_top(r'Databases/top_week_image.db')
 
 
 @dp.message_handler(commands=["start"])
@@ -50,6 +51,31 @@ async def add_hometask(message: types.Message):
                          'Также при добавлении домашки нельзя использовать запятые и скобки(скоро исправим)')
 
 
+@dp.message_handler(content_types=types.ContentType.PHOTO)
+async def photos_upload(message: types.Message):
+    if check_user_id(message.from_user.id):
+        file_id = message.photo[-1].file_id
+        await bot.send_message(chat_id=message.from_user.id, text='Скопируйте следующее сообщение '
+                                                                  'и вставьте после /photo <день недели> <предмет>')
+        await bot.send_message(chat_id=message.from_user.id, text=file_id)
+    else:
+        pass
+
+
+@dp.message_handler(commands='photo')
+async def photos_upload(message: types.Message):
+    if check_user_id(message.from_user.id):
+        try:
+            stroka = message.text.split()
+            week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[1])).lower()
+            PhotosDB_top.add_photo(f'"{week_day_ru}"', f'"{stroka[2]}"', f'"{stroka[3]}"')
+            await message.answer('Вы успешно загрузили фотографию.')
+        except Exception as ex:
+            print(ex)
+    else:
+        pass
+
+
 @dp.message_handler(commands=["add"])
 async def add_hometask(message: types.Message):
     if check_user_id(message.from_user.id):
@@ -59,18 +85,20 @@ async def add_hometask(message: types.Message):
                 stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
                 stroka_with_subject = stroka[3].lower()
                 week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                BotDB_top.add_homework_top(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
+                await BotDB_top.add_homework_top(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
                 await message.answer('Вы успешно добавили задание.')
-            except Exception:
+            except Exception as ex:
+                print(ex)
                 await message.answer('Произошла ошибка.')
         elif stroka[1].lower() == 'нижняя':
             try:
                 stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
                 stroka_with_subject = stroka[3].lower()
                 week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                BotDB_lower.add_homework_lower(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
+                await BotDB_lower.add_homework_lower(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
                 await message.answer('Вы успешно добавили задание.')
-            except Exception:
+            except Exception as ex:
+                print(ex)
                 await message.answer('Произошла ошибка.')
         else:
             await message.answer('Вы не выбрали тип недели.')
@@ -107,6 +135,9 @@ async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, понедельник:\n\n\n{BotDB_top.monday_top()}',
                            reply_markup=main_keyboard)
+    for i in PhotosDB_top.check_photos('monday'):
+        if i != '':
+            await bot.send_photo(chat_id=callback.from_user.id, photo=i)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
@@ -114,6 +145,9 @@ async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, вторник:\n\n\n{BotDB_top.tuesday_top()}',
                            reply_markup=main_keyboard)
+    for i in PhotosDB_top.check_photos('tuesday'):
+        if i != '':
+            await bot.send_photo(chat_id=callback.from_user.id, photo=i)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_wednesday')
@@ -121,6 +155,9 @@ async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, среда:\n\n\n{BotDB_top.wednesday_top()}',
                            reply_markup=main_keyboard)
+    for i in PhotosDB_top.check_photos('wednesday'):
+        if i != '':
+            await bot.send_photo(chat_id=callback.from_user.id, photo=i)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_thursday')
@@ -128,6 +165,9 @@ async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, четверг:\n\n\n{BotDB_top.thursday_top()}',
                            reply_markup=main_keyboard)
+    for i in PhotosDB_top.check_photos('thursday'):
+        if i != '':
+            await bot.send_photo(chat_id=callback.from_user.id, photo=i)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_friday')
@@ -135,6 +175,9 @@ async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, пятница:\n\n\n{BotDB_top.friday_top()}',
                            reply_markup=main_keyboard)
+    for i in PhotosDB_top.check_photos('friday'):
+        if i != '':
+            await bot.send_photo(chat_id=callback.from_user.id, photo=i)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_saturday')
@@ -142,6 +185,9 @@ async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, суббота:\n\n\n{BotDB_top.saturday_top()}',
                            reply_markup=main_keyboard)
+    for i in PhotosDB_top.check_photos('saturday'):
+        if i != '':
+            await bot.send_photo(chat_id=callback.from_user.id, photo=i)
 
 
 # Тут короче разделение недель, чтоб код понятней был
