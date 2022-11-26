@@ -38,6 +38,38 @@ class BotDB_top:
 {lst_subject[2]}: {lst_homework[2]}"""
         return text # вывод домашнего задания с готовыми данными
 
+    def get_full_homework_top(self):
+        """функция для вывода всей домашки нидней недели"""
+        text_homework = f"""__Верхняя неделя, понедельник__:   
+        
+{self.get_homework_top('monday')}
+--------------------------------------------
+
+__Вторник__:
+
+{self.get_homework_top('tuesday')}
+--------------------------------------------
+
+__Среда__:
+
+{self.get_homework_top('wednesday')}
+--------------------------------------------
+
+__Четверг__:
+
+{self.get_homework_top('thursday')}
+--------------------------------------------
+
+__Пятница__:
+
+{self.get_homework_top('friday')}
+--------------------------------------------
+
+__Субббота__:
+
+{self.get_homework_top('saturday')}"""
+        return text_homework
+
 
     def close_db(self):
         """Разрыв соединения с БД"""
@@ -80,6 +112,38 @@ class BotDB_lower:
 
 {lst_subject[2]}: {lst_homework[2]}"""
         return text  # вывод домашнего задания с готовыми данными
+
+    def get_full_homework_lower(self):
+        """функция для вывода всей доьашки нижней недели"""
+        text_homework = f"""__Нижняя неделя, понедельник__:   
+
+{self.get_homework_lower('monday')}
+--------------------------------------------
+
+__Вторник__:
+
+{self.get_homework_lower('tuesday')}
+--------------------------------------------
+
+__Среда__:
+
+{self.get_homework_lower('wednesday')}
+--------------------------------------------
+
+__Четверг__:
+
+{self.get_homework_lower('thursday')}
+--------------------------------------------
+
+ __Пятница__:
+
+{self.get_homework_lower('friday')}
+--------------------------------------------
+
+__Субббота__:
+
+{self.get_homework_lower('saturday')}"""
+        return text_homework
 
     def close_db(self):
         """Разрыв соединения с БД"""
