@@ -21,6 +21,7 @@ PhotosDB_lower = PhotosDB_lower(r'Databases/lower_week_image.db')
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
+    """СТАРТ"""
     await message.answer("Вас приветствует бот, созданный, чтобы говорить вам ваше домашнее задание. "
                          "Введите /help , чтобы узнать функционал бота и открыть клавиатуру с командами.\n"
                          "Все предложения и замечания, касающиеся бота писать @aleks_9045 и @Shuv1_Wolf\n"
@@ -29,21 +30,24 @@ async def start(message: types.Message):
 
 @dp.message_handler(commands=["help"])
 async def help_me(message: types.Message):
+    """ОБЩАЯ ИНФА"""
     await message.answer("Команды:\n"
                          "/hometask - Раздел, где вы можете узнать домашнее задание.\n"
                          "/about_add - Раздел, где вы можете узнать, как добавить домашнее задание.\n"
                          "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.\n"
-                         "/about_photos - Раздел, где вы можете узнать как добавлять фотографии.",
+                         "/about_photos - Раздел, где вы можете узнать, как добавлять фотографии.",
                          reply_markup=main_keyboard)
 
 
 @dp.message_handler(commands=["my_id"])
 async def my_id(message: types.Message):
+    """УЗНАТЬ СВОЙ ID"""
     await message.answer(message.from_user.id)
 
 
 @dp.message_handler(commands=["about_add"])
-async def add_hometask(message: types.Message):
+async def about_add(message: types.Message):
+    """ПРО ДОБАВЛЕНИЕ ДЗ"""
     await message.answer('С помощью команды /add вы можете добавлять задания, '
                          'после команды нужно написать тип недели, день недели, предмет, и само задание. '
                          'Пример использования:\n'
@@ -54,7 +58,8 @@ async def add_hometask(message: types.Message):
 
 
 @dp.message_handler(commands=["about_photos"])
-async def add_hometask(message: types.Message):
+async def about_photos(message: types.Message):
+    """ПРО ФОТО"""
     await message.answer('С помощью команды /photo вы можете загружать фотографии(пока что максимум одну) '
                          'на каждый предмет. Если у вас есть право на редактирование ДЗ, '
                          'то вы должны просто отправить фотограграфию и следовать дальнейшим инструкциям.'
@@ -65,6 +70,7 @@ async def add_hometask(message: types.Message):
 
 @dp.message_handler(content_types=types.ContentType.PHOTO)
 async def photos_upload(message: types.Message):
+    """ЗАГРУЗКА ФОТО"""
     if check_user_id(message.from_user.id):
         file_id = message.photo[-1].file_id
         await bot.send_message(
@@ -105,6 +111,7 @@ async def photos_upload(message: types.Message):
 
 @dp.message_handler(commands=["add"])
 async def add_hometask(message: types.Message):
+    """ДОБАВЛЕНИЕ ДЗ"""
     if check_user_id(message.from_user.id):
         stroka = message.text.split()
         if stroka[1].lower() == 'верхняя':
@@ -135,12 +142,25 @@ async def add_hometask(message: types.Message):
 
 @dp.message_handler(commands=["remove_keyboard"])
 async def remove_keyboard(message: types.Message):
+    """УДАЛЕНИЕ КЛАВИАТУРЫ"""
     await message.answer("Клавиатура скрыта.", reply_markup=types.ReplyKeyboardRemove())
 
 
 @dp.message_handler(commands=["hometask"])
 async def hometask(message: types.Message):
     await message.answer("Выберите неделю", reply_markup=weeks_keyboard)
+
+
+@dp.callback_query_handler(lambda call: call.data == 'all_top_week')
+async def all_top(callback: types.CallbackQuery):
+    await bot.answer_callback_query(callback.id)
+    await bot.send_message(callback.from_user.id, BotDB_top.get_full_homework_top().replace('*', ','))
+
+
+@dp.callback_query_handler(lambda call: call.data == 'all_lower_week')
+async def all_top(callback: types.CallbackQuery):
+    await bot.answer_callback_query(callback.id)
+    await bot.send_message(callback.from_user.id, BotDB_lower.get_full_homework_lower().replace('*', ','))
 
 
 @dp.callback_query_handler(text='top_week')
@@ -161,7 +181,7 @@ async def lower_week_command(callback_query: types.CallbackQuery):
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, понедельник:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("monday")}',
+                                                  f'{BotDB_top.get_homework_top("monday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_top.check_photos('monday'):
         if photo != '':
@@ -172,7 +192,7 @@ async def dz_top(callback: types.CallbackQuery):
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, вторник:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("tuesday")}',
+                                                  f'{BotDB_top.get_homework_top("tuesday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_top.check_photos('tuesday'):
         if photo != '':
@@ -183,7 +203,7 @@ async def dz_top(callback: types.CallbackQuery):
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, среда:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("wednesday")}',
+                                                  f'{BotDB_top.get_homework_top("wednesday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_top.check_photos('wednesday'):
         if photo != '':
@@ -194,7 +214,7 @@ async def dz_top(callback: types.CallbackQuery):
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, четверг:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("thursday")}',
+                                                  f'{BotDB_top.get_homework_top("thursday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_top.check_photos('thursday'):
         if photo != '':
@@ -205,7 +225,7 @@ async def dz_top(callback: types.CallbackQuery):
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, пятница:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("friday")}',
+                                                  f'{BotDB_top.get_homework_top("friday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_top.check_photos('friday'):
         if photo != '':
@@ -216,7 +236,7 @@ async def dz_top(callback: types.CallbackQuery):
 async def dz_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Верхняя неделя, суббота:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("saturday")}',
+                                                  f'{BotDB_top.get_homework_top("saturday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_top.check_photos('saturday'):
         if photo != '':
@@ -230,7 +250,7 @@ async def dz_top(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Нижняя неделя, понедельник:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("monday")}',
+                                                  f'{BotDB_lower.get_homework_lower("monday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_lower.check_photos('monday'):
         if photo != '':
@@ -241,7 +261,7 @@ async def dz_lower(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Нижняя неделя, вторник:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("tuesday")}',
+                                                  f'{BotDB_lower.get_homework_lower("tuesday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_lower.check_photos('tuesday'):
         if photo != '':
@@ -252,7 +272,7 @@ async def dz_lower(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Нижняя неделя, среда:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("wednesday")}',
+                                                  f'{BotDB_lower.get_homework_lower("wednesday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_lower.check_photos('wednesday'):
         if photo != '':
@@ -263,7 +283,7 @@ async def dz_lower(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Нижняя неделя, четверг:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("thursday")}',
+                                                  f'{BotDB_lower.get_homework_lower("thursday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_lower.check_photos('thursday'):
         if photo != '':
@@ -274,7 +294,7 @@ async def dz_lower(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Нижняя неделя, пятница:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("friday")}',
+                                                  f'{BotDB_lower.get_homework_lower("friday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_lower.check_photos('friday'):
         if photo != '':
@@ -285,7 +305,7 @@ async def dz_lower(callback: types.CallbackQuery):
 async def dz_lower(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     await bot.send_message(callback.from_user.id, f'Нижняя неделя, суббота:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("saturday")}',
+                                                  f'{BotDB_lower.get_homework_lower("saturday")}'.replace('*', ','),
                            reply_markup=main_keyboard)
     for photo in PhotosDB_lower.check_photos('saturday'):
         if photo != '':

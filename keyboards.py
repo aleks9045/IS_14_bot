@@ -17,6 +17,8 @@ photos_info_command = KeyboardButton('/about_photos')
 
 top_week_command = InlineKeyboardButton('Верхняя неделя', callback_data='top_week')
 lower_week_command = InlineKeyboardButton('Нижняя неделя', callback_data='lower_week')
+all_top_week_command = InlineKeyboardButton('Вся верхняя неделя', callback_data='all_top_week')
+all_lower_week_command = InlineKeyboardButton('Вся нижняя неделя', callback_data='all_lower_week')
 
 dz_top_week_monday = InlineKeyboardButton('Понедельник', callback_data='top_week_monday')
 dz_top_week_tuesday = InlineKeyboardButton('Вторник', callback_data='top_week_tuesday')
@@ -38,6 +40,6 @@ top_week_keyboard.add(dz_top_week_monday, dz_top_week_tuesday, dz_top_week_wedne
 
 lower_week_keyboard.add(dz_lower_week_monday, dz_lower_week_tuesday, dz_lower_week_wednesday, dz_lower_week_thursday,
                         dz_lower_week_friday, dz_lower_week_saturday)
-weeks_keyboard.add(lower_week_command, top_week_command)
+weeks_keyboard.add(lower_week_command, top_week_command, all_top_week_command, all_lower_week_command)
 
 main_keyboard.add(main_hometask, add_hometask_info_command, photos_info_command, keyboard_remove_command)

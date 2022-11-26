@@ -20,7 +20,6 @@ class PhotosDB_top:
         result = self.cursor.fetchone()
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
-        print(lst)
         if lst[0] != 'None':
             photo1 = lst[0]
         if lst[1] != 'None':
