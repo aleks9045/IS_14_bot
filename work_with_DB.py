@@ -39,7 +39,7 @@ class BotDB_top:
         return text # вывод домашнего задания с готовыми данными
 
     def get_full_homework_top(self):
-        """функция для вывода всей домашки нидней недели"""
+        """функция для вывода всей домашки верхней недели"""
         text_homework = f"""__Верхняя неделя, понедельник__:   
         
 {self.get_homework_top('monday')}
@@ -114,7 +114,7 @@ class BotDB_lower:
         return text  # вывод домашнего задания с готовыми данными
 
     def get_full_homework_lower(self):
-        """функция для вывода всей доьашки нижней недели"""
+        """функция для вывода всей домашки нижней недели"""
         text_homework = f"""__Нижняя неделя, понедельник__:   
 
 {self.get_homework_lower('monday')}
