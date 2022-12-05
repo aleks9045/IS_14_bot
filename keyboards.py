@@ -14,12 +14,10 @@ lower_week_keyboard_add = InlineKeyboardMarkup(resize_keyboard=True)
 main_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 keyboard_remove = ReplyKeyboardMarkup(resize_keyboard=True)
 add_hometask_info = ReplyKeyboardMarkup(resize_keyboard=True)
-photos_info = ReplyKeyboardMarkup(resize_keyboard=True)
 
 main_hometask = KeyboardButton('/hometask')
 keyboard_remove_command = KeyboardButton('/remove_keyboard')
 add_hometask_info_command = KeyboardButton('/about_add')
-photos_info_command = KeyboardButton('/about_photos')
 
 top_week_command = InlineKeyboardButton('Верхняя неделя', callback_data='top_week')
 lower_week_command = InlineKeyboardButton('Нижняя неделя', callback_data='lower_week')
@@ -75,8 +73,9 @@ lower_week_keyboard_add.add(dz_lower_week_monday_add, dz_lower_week_tuesday_add,
                             dz_lower_week_thursday_add, dz_lower_week_friday_add, dz_lower_week_saturday_add)
 
 
-weeks_keyboard.add(lower_week_command, top_week_command, all_lower_week_command, all_top_week_command)
+weeks_keyboard.row(lower_week_command, top_week_command)
+weeks_keyboard.row(all_lower_week_command, all_top_week_command)
 
 weeks_keyboard_add.add(top_week_command_add, lower_week_command_add)
 
-main_keyboard.add(main_hometask, add_hometask_info_command, photos_info_command, keyboard_remove_command)
+main_keyboard.add(main_hometask, add_hometask_info_command, keyboard_remove_command)

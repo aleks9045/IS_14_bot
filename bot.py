@@ -1,17 +1,17 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
+
 from keyboards import weeks_keyboard, weeks_keyboard_add, top_week_keyboard, top_week_keyboard_add, \
     lower_week_keyboard, lower_week_keyboard_add, main_keyboard
 
-from States import WriteHomeworkTop, WriteHomeworkLower, storage
+from states import WriteHomeworkTop, WriteHomeworkLower, storage
 from aiogram.dispatcher import FSMContext
 
-from bd_user_id import check_user_id
 from Databases_py.work_with_DB import BotDB_top, BotDB_lower
 from Databases_py.DB_photos import PhotosDB_top, PhotosDB_lower
 
-from Data.config import TOKEN
+from Data.config import TOKEN, admins
 
 
 # Включаем логирование, чтобы не пропустить важные сообщения
@@ -71,11 +71,11 @@ async def about_add(message: types.Message):
 @dp.message_handler(commands=["add"])
 async def add_hometask(message: types.Message):
     """ДОБАВЛЕНИЕ ДЗ"""
-    if check_user_id(message.from_user.id):
+    if message.from_user.id in admins:
         await message.answer("Выберите неделю для добавления дз:", reply_markup=weeks_keyboard_add)
 
 
-@dp.callback_query_handler(lambda call: call.data == 'top_week_add' or call.data == 'top_week_add')
+@dp.callback_query_handler(lambda call: call.data == 'top_week_add' or call.data == 'lower_week_add')
 async def all_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     if callback.data == 'top_week_add':
