@@ -1,17 +1,32 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher, types
-from keyboards import weeks_keyboard, top_week_keyboard, lower_week_keyboard, main_keyboard
+from keyboards import weeks_keyboard, weeks_keyboard_add, top_week_keyboard, top_week_keyboard_add, \
+    lower_week_keyboard, lower_week_keyboard_add, main_keyboard
+
+from States import WriteHomeworkTop, WriteHomeworkLower, storage
+from aiogram.dispatcher import FSMContext
+
 from bd_user_id import check_user_id
-from work_with_DB import BotDB_top, BotDB_lower
-from DB_photos import PhotosDB_top, PhotosDB_lower
-from deep_translator import GoogleTranslator
+from Databases_py.work_with_DB import BotDB_top, BotDB_lower
+from Databases_py.DB_photos import PhotosDB_top, PhotosDB_lower
+
+from Data.config import TOKEN
+
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token="5943456648:AAHnaCeOanZYMK4T8mKHlRIg267Bb2_C6PA")
-dp = Dispatcher(bot)
+
+lst_of_days = ['top_monday', 'top_tuesday', 'top_wednesday', 'top_thursday', 'top_friday', 'top_saturday',
+               'lower_monday', 'lower_tuesday', 'lower_wednesday', 'lower_thursday', 'lower_friday',
+               'lower_saturday']
+
+lst_of_days_add = ['top_monday_add', 'top_tuesday_add', 'top_wednesday_add', 'top_thursday_add',
+                   'top_friday_add', 'top_saturday_add', 'lower_monday_add', 'lower_tuesday_add',
+                   'lower_wednesday_add', 'lower_thursday_add', 'lower_friday_add', 'lower_saturday_add']
+
+time_zone = []
 
 BotDB_top = BotDB_top(r'Databases/top_week.db')
 BotDB_lower = BotDB_lower(r'Databases/lower_week.db')
@@ -19,13 +34,16 @@ PhotosDB_top = PhotosDB_top(r'Databases/top_week_image.db')
 PhotosDB_lower = PhotosDB_lower(r'Databases/lower_week_image.db')
 
 
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot, storage=storage)
+
+
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
     """СТАРТ"""
     await message.answer("Вас приветствует бот, созданный, чтобы говорить вам ваше домашнее задание. "
                          "Введите /help , чтобы узнать функционал бота и открыть клавиатуру с командами.\n"
-                         "Все предложения и замечания, касающиеся бота писать @aleks_9045 и @Shuv1_Wolf\n"
-                         "Особые благодарности:Даниил Болгов, Михаил Скуратов, Алексей Веденёв.")
+                         "Все предложения и замечания, касающиеся бота писать @aleks_9045 и @Shuv1_Wolf")
 
 
 @dp.message_handler(commands=["help"])
@@ -34,8 +52,7 @@ async def help_me(message: types.Message):
     await message.answer("Команды:\n"
                          "/hometask - Раздел, где вы можете узнать домашнее задание.\n"
                          "/about_add - Раздел, где вы можете узнать, как добавить домашнее задание.\n"
-                         "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.\n"
-                         "/about_photos - Раздел, где вы можете узнать, как добавлять фотографии.",
+                         "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.\n",
                          reply_markup=main_keyboard)
 
 
@@ -48,96 +65,110 @@ async def my_id(message: types.Message):
 @dp.message_handler(commands=["about_add"])
 async def about_add(message: types.Message):
     """ПРО ДОБАВЛЕНИЕ ДЗ"""
-    await message.answer('С помощью команды /add вы можете добавлять задания, '
-                         'после команды нужно написать тип недели, день недели, предмет, и само задание. '
-                         'Пример использования:\n'
-                         '/add нижняя понедельник математика Сделать номер 128 и 129\n'
-                         '/add верхняя четверг иностранный_язык(<--внимание на нижнее подчеркивание) '
-                         'выучить словарные слова на стр. 111\n'
-                         'Также при добавлении домашки нельзя использовать запятые и скобки(скоро исправим)')
-
-
-@dp.message_handler(commands=["about_photos"])
-async def about_photos(message: types.Message):
-    """ПРО ФОТО"""
-    await message.answer('С помощью команды /photo вы можете загружать фотографии(пока что максимум одну) '
-                         'на каждый предмет. Если у вас есть право на редактирование ДЗ, '
-                         'то вы должны просто отправить фотограграфию и следовать дальнейшим инструкциям.'
-                         'Пример использования схож с командой /add:'
-                         '/photo верхняя понедельник математика '
-                         'AgACAgIAAxkBAAIDk2OBCJY_fftOkOM2AAHknGQJ4W4K-wAC4soxGzkSCEh31A_XVBPQIgEAAwIAA3gAAysE')
-
-
-@dp.message_handler(content_types=types.ContentType.PHOTO)
-async def photos_upload(message: types.Message):
-    """ЗАГРУЗКА ФОТО"""
-    if check_user_id(message.from_user.id):
-        file_id = message.photo[-1].file_id
-        await bot.send_message(
-            chat_id=message.from_user.id,
-            text='Скопируйте следующее сообщение и вставьте после /photo <тип недели> <день недели> <предмет>'
-        )
-        await bot.send_message(chat_id=message.from_user.id, text=file_id)
-    else:
-        pass
-
-
-@dp.message_handler(commands='photo')
-async def photos_upload(message: types.Message):
-    """ДОБАВЛЕНИЕ ФОТО"""
-    if check_user_id(message.from_user.id):
-        stroka = message.text.split()
-        if stroka[1].lower() == 'верхняя':
-            try:
-                week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                PhotosDB_top.add_photo(f'"{week_day_ru}"', f'"{stroka[3]}"', f'"{stroka[4]}"')
-                await message.answer('Вы успешно загрузили фотографию.')
-            except Exception as ex:
-                print(ex)
-                await message.answer('Произошла ошибка.')
-        elif stroka[1].lower() == 'нижняя':
-            try:
-                week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                PhotosDB_top.add_photo(f'"{week_day_ru}"', f'"{stroka[3]}"', f'"{stroka[4]}"')
-                await message.answer('Вы успешно загрузили фотографию.')
-            except Exception as ex:
-                print(ex)
-                await message.answer('Произошла ошибка.')
-        else:
-            await message.answer('Вы не выбрали тип недели.')
-    else:
-        pass
+    await message.answer('С помощью команды /add вы можете добавлять задания.')
 
 
 @dp.message_handler(commands=["add"])
 async def add_hometask(message: types.Message):
     """ДОБАВЛЕНИЕ ДЗ"""
     if check_user_id(message.from_user.id):
-        stroka = message.text.split()
-        if stroka[1].lower() == 'верхняя':
-            try:
-                stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
-                stroka_with_subject = stroka[3].lower()
-                week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                BotDB_top.add_homework_top(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
-                await message.answer('Вы успешно добавили задание.')
-            except Exception as ex:
-                print(ex)
-                await message.answer('Произошла ошибка.')
-        elif stroka[1].lower() == 'нижняя':
-            try:
-                stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i > 3])
-                stroka_with_subject = stroka[3].lower()
-                week_day_ru = (GoogleTranslator(source='ru', target='en').translate(stroka[2])).lower()
-                BotDB_lower.add_homework_lower(f'"{week_day_ru}"', f'"{stroka_with_subject}"', f'"{stroka_with_task}"')
-                await message.answer('Вы успешно добавили задание.')
-            except Exception as ex:
-                print(ex)
-                await message.answer('Произошла ошибка.')
-        else:
-            await message.answer('Вы не выбрали тип недели.')
+        await message.answer("Выберите неделю для добавления дз:", reply_markup=weeks_keyboard_add)
+
+
+@dp.callback_query_handler(lambda call: call.data == 'top_week_add' or call.data == 'top_week_add')
+async def all_top(callback: types.CallbackQuery):
+    await bot.answer_callback_query(callback.id)
+    if callback.data == 'top_week_add':
+        await bot.send_message(callback.from_user.id, 'Выберите день недели(верхняя):',
+                               reply_markup=top_week_keyboard_add)
+    elif callback.data == 'lower_week_add':
+        await bot.send_message(callback.from_user.id, 'Выберите день недели(нижняя):',
+                               reply_markup=lower_week_keyboard_add)
     else:
-        await message.answer('Вы не можете добавлять задания.')
+        await bot.send_message(callback.from_user.id, 'Произошла ошибка.')
+
+
+@dp.callback_query_handler(lambda call: call.data in lst_of_days_add)
+async def all_top(callback: types.CallbackQuery):
+    distribution = callback.data.split('_')
+    time_zone.append(distribution)
+    if distribution[0] == 'top':
+        try:
+            await WriteHomeworkTop.add_text.set()
+            await bot.answer_callback_query(callback.id)
+            await bot.send_message(callback.from_user.id, 'Напишите предмет и задание через пробел.')
+        except Exception as ex_:
+            print(ex_)
+    elif distribution[0] == 'lower':
+        try:
+            await WriteHomeworkLower.add_text.set()
+            await bot.answer_callback_query(callback.id)
+            await bot.send_message(callback.from_user.id, 'Напишите предмет и задание через пробел.')
+        except Exception as ex_:
+            print(ex_)
+
+
+@dp.message_handler(state=WriteHomeworkTop.add_text)
+async def remove_keyboard(message: types.Message):
+    try:
+        stroka = message.text.split()
+        time_zone.append(stroka[0].lower())
+        stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i >= 1])
+        BotDB_top.add_homework_top(f'"{time_zone[0][1]}"', f'"{stroka[0].lower()}"', f'"{stroka_with_task}"')
+        await WriteHomeworkTop.next()
+        await message.answer("Вы успешно добавили домашнее задание")
+        await message.answer("Теперь прикрепите фотографию или напишите /empty")
+    except Exception as ex_:
+        print(ex_)
+        await message.answer('Произошла ошибка.')
+
+
+@dp.message_handler(state=WriteHomeworkLower.add_text)
+async def remove_keyboard(message: types.Message):
+    try:
+        stroka = message.text.split()
+        time_zone.append(stroka[0].lower())
+        stroka_with_task = ' '.join([el for i, el in enumerate(stroka) if i >= 1])
+        BotDB_lower.add_homework_lower(f'"{time_zone[0][1]}"', f'"{stroka[0].lower()}"', f'"{stroka_with_task}"')
+        await WriteHomeworkLower.next()
+        await message.answer("Вы успешно добавили домашнее задание")
+        await message.answer("Теперь прикрепите фотографию или напишите /empty")
+    except Exception as ex_:
+        print(ex_)
+        await message.answer('Произошла ошибка.')
+
+
+@dp.message_handler(state=WriteHomeworkTop.add_photo, commands=['empty'])
+async def remove_keyboard(message: types.Message, state: FSMContext):
+    await state.finish()
+    await message.answer('Успешно!')
+
+
+@dp.message_handler(state=WriteHomeworkTop.add_photo, content_types=types.ContentType.PHOTO)
+async def remove_keyboard(message: types.Message, state: FSMContext):
+    try:
+        photo = message.photo[0].file_id
+        print(time_zone)
+        PhotosDB_top.add_photo(f'"{time_zone[0][1]}"', f'"{time_zone[1]}"', f'"{photo}"')
+        time_zone.clear()
+        await message.answer("Вы успешно добавили фотографию")
+        await state.finish()
+    except Exception as ex_:
+        print(ex_)
+        await message.answer('Произошла ошибка.')
+
+
+@dp.message_handler(state=WriteHomeworkLower.add_photo, content_types=types.ContentType.PHOTO)
+async def remove_keyboard(message: types.Message, state: FSMContext):
+    try:
+        photo = message.photo[0].file_id
+        PhotosDB_lower.add_photo(f'"{time_zone[0][1]}"', f'"{time_zone[1]}"', f'"{photo}"')
+        time_zone.clear()
+        await message.answer("Вы успешно добавили фотографию")
+        await state.finish()
+    except Exception as ex_:
+        print(ex_)
+        await message.answer('Произошла ошибка.')
 
 
 @dp.message_handler(commands=["remove_keyboard"])
@@ -148,19 +179,16 @@ async def remove_keyboard(message: types.Message):
 
 @dp.message_handler(commands=["hometask"])
 async def hometask(message: types.Message):
-    await message.answer("Выберите неделю", reply_markup=weeks_keyboard)
+    await message.answer("Выберите тип недели", reply_markup=weeks_keyboard)
 
 
-@dp.callback_query_handler(lambda call: call.data == 'all_top_week')
+@dp.callback_query_handler(lambda call: call.data == 'all_top_week' or call.data == 'all_lower_week')
 async def all_top(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_top.get_full_homework_top().replace('*', ','))
-
-
-@dp.callback_query_handler(lambda call: call.data == 'all_lower_week')
-async def all_top(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, BotDB_lower.get_full_homework_lower().replace('*', ','))
+    if callback.data == 'all_top_week':
+        await bot.send_message(callback.from_user.id, BotDB_top.get_full_homework_top().replace('*', ','))
+    elif callback.data == 'all_lower_week':
+        await bot.send_message(callback.from_user.id, BotDB_lower.get_full_homework_lower().replace('*', ','))
 
 
 @dp.callback_query_handler(text='top_week')
@@ -177,139 +205,34 @@ async def lower_week_command(callback_query: types.CallbackQuery):
                            reply_markup=lower_week_keyboard)
 
 
-@dp.callback_query_handler(lambda call: call.data == 'top_week_monday')
-async def dz_top(callback: types.CallbackQuery):
+@dp.callback_query_handler(lambda call: call.data in lst_of_days)
+async def dz(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, понедельник:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("monday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_top.check_photos('monday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
+    distribution = callback.data.split('_')
+    if distribution[0] == 'top':
+        try:
+            await bot.send_message(callback.from_user.id,
+                                   f'Верхняя неделя, понедельник:\n\n\n' 
+                                   f'{BotDB_top.get_homework_top(f"{distribution[1]}")}'.replace('*', ','),
+                                   reply_markup=main_keyboard)
 
+            for photo in PhotosDB_top.check_photos(f'{distribution[1]}'):
+                if photo != '':
+                    await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
+        except Exception as ex_:
+            print(ex_)
+    elif distribution[0] == 'lower':
+        try:
+            await bot.send_message(callback.from_user.id,
+                                   f'Верхняя неделя, понедельник:\n\n\n' 
+                                   f'{BotDB_lower.get_homework_lower(f"{distribution[1]}")}'.replace('*', ','),
+                                   reply_markup=main_keyboard)
 
-@dp.callback_query_handler(lambda call: call.data == 'top_week_tuesday')
-async def dz_top(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, вторник:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("tuesday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_top.check_photos('tuesday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'top_week_wednesday')
-async def dz_top(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, среда:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("wednesday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_top.check_photos('wednesday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'top_week_thursday')
-async def dz_top(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, четверг:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("thursday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_top.check_photos('thursday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'top_week_friday')
-async def dz_top(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, пятница:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("friday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_top.check_photos('friday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'top_week_saturday')
-async def dz_top(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Верхняя неделя, суббота:\n\n\n'
-                                                  f'{BotDB_top.get_homework_top("saturday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_top.check_photos('saturday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-# Тут короче разделение недель, чтоб код понятней был
-
-
-@dp.callback_query_handler(lambda call: call.data == 'lower_week_monday')
-async def dz_lower(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, понедельник:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("monday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_lower.check_photos('monday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'lower_week_tuesday')
-async def dz_lower(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, вторник:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("tuesday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_lower.check_photos('tuesday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'lower_week_wednesday')
-async def dz_lower(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, среда:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("wednesday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_lower.check_photos('wednesday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'lower_week_thursday')
-async def dz_lower(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, четверг:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("thursday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_lower.check_photos('thursday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'lower_week_friday')
-async def dz_lower(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, пятница:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("friday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_lower.check_photos('friday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
-
-
-@dp.callback_query_handler(lambda call: call.data == 'lower_week_saturday')
-async def dz_lower(callback: types.CallbackQuery):
-    await bot.answer_callback_query(callback.id)
-    await bot.send_message(callback.from_user.id, f'Нижняя неделя, суббота:\n\n\n'
-                                                  f'{BotDB_lower.get_homework_lower("saturday")}'.replace('*', ','),
-                           reply_markup=main_keyboard)
-    for photo in PhotosDB_lower.check_photos('saturday'):
-        if photo != '':
-            await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
+            for photo in PhotosDB_lower.check_photos(f'{distribution[1]}'):
+                if photo != '':
+                    await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
+        except Exception as ex_:
+            print(ex_)
 
 
 async def main():
