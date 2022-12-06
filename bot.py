@@ -149,7 +149,6 @@ async def remove_keyboard(message: types.Message, state: FSMContext):
 async def remove_keyboard(message: types.Message, state: FSMContext):
     try:
         photo = message.photo[0].file_id
-        print(time_zone)
         PhotosDB_top.add_photo(f'"{time_zone[0][1]}"', f'"{time_zone[1]}"', f'"{photo}"')
         time_zone.clear()
         await message.answer("Вы успешно добавили фотографию")
