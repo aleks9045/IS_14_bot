@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="53dde3e7-1953-4221-8639-74bd83d65a72" name="Changes" comment="alpha ver 3.1 Баги-, Кнопки+">
+    <list default="true" id="53dde3e7-1953-4221-8639-74bd83d65a72" name="Changes" comment="гит игнор не робит ьуь">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Databases/top_week.db" beforeDir="false" afterPath="$PROJECT_DIR$/Databases/top_week.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -243,7 +242,21 @@
       <option name="project" value="LOCAL" />
       <updated>1670265898287</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="alpha ver 3.1">
+      <created>1670337567093</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1670337567093</updated>
+    </task>
+    <task id="LOCAL-00015" summary="гит игнор не робит ьуь">
+      <created>1670337689534</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1670337689534</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -279,6 +292,8 @@
     <MESSAGE value="alpha ver 3.0 BIG UPDATE&#10;Чуть-чуть налажена архитектура кода,&#10;добавлено удобное добавление домашки,&#10;прилично сокращён код." />
     <MESSAGE value="alpha ver 3.01 Добавлен gitignore" />
     <MESSAGE value="alpha ver 3.1 Баги-, Кнопки+" />
-    <option name="LAST_COMMIT_MESSAGE" value="alpha ver 3.1 Баги-, Кнопки+" />
+    <MESSAGE value="alpha ver 3.1" />
+    <MESSAGE value="гит игнор не робит ьуь" />
+    <option name="LAST_COMMIT_MESSAGE" value="гит игнор не робит ьуь" />
   </component>
 </project>
