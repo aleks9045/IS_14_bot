@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="53dde3e7-1953-4221-8639-74bd83d65a72" name="Changes" comment="alpha ver 3.01 Добавлен gitignore">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Data/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Databases/users.bd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bd_user_id.py" beforeDir="false" afterPath="$PROJECT_DIR$/bd_user_id.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/keyboards.py" beforeDir="false" afterPath="$PROJECT_DIR$/keyboards.py" afterDir="false" />
+    <list default="true" id="53dde3e7-1953-4221-8639-74bd83d65a72" name="Changes" comment="alpha ver 3.1 Баги-, Кнопки+">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Databases/top_week.db" beforeDir="false" afterPath="$PROJECT_DIR$/Databases/top_week.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -240,7 +236,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670263855963</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="alpha ver 3.1 Баги-, Кнопки+">
+      <created>1670265898287</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1670265898287</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -275,6 +278,7 @@
     <MESSAGE value="alpha ver 2.2 я дз на всю неделю красивое" />
     <MESSAGE value="alpha ver 3.0 BIG UPDATE&#10;Чуть-чуть налажена архитектура кода,&#10;добавлено удобное добавление домашки,&#10;прилично сокращён код." />
     <MESSAGE value="alpha ver 3.01 Добавлен gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="alpha ver 3.01 Добавлен gitignore" />
+    <MESSAGE value="alpha ver 3.1 Баги-, Кнопки+" />
+    <option name="LAST_COMMIT_MESSAGE" value="alpha ver 3.1 Баги-, Кнопки+" />
   </component>
 </project>
