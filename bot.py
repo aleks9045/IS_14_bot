@@ -43,7 +43,7 @@ async def start(message: types.Message):
     """СТАРТ"""
     await message.answer("Вас приветствует бот, созданный, чтобы говорить вам ваше домашнее задание. "
                          "Введите /help , чтобы узнать функционал бота и открыть клавиатуру с командами.\n"
-                         "Все предложения и замечания, касающиеся бота писать @aleks_9045 и @Shuv1_Wolf\n"
+                         "Все предложения и замечания, касающиеся бота писать @aleks_9045 и @Shuv1_Wolf\n\n"
                          "ver. 1.1")
 
 
@@ -236,6 +236,7 @@ async def dz(callback: types.CallbackQuery):
 
 
 async def main():
+    await dp.bot.send_message(chat_id=admins[0], text='Бот запущен.')
     await dp.start_polling(bot)
 
 try:
