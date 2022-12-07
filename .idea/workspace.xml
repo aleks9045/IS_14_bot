@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="53dde3e7-1953-4221-8639-74bd83d65a72" name="Changes" comment="проверка">
+      <change afterPath="$PROJECT_DIR$/Databases_py/creating_databases.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IS_14_bot.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Databases_py/work_with_DB.py" beforeDir="false" afterPath="$PROJECT_DIR$/Databases_py/work_with_DB.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +54,7 @@
       <recent name="$PROJECT_DIR$/Databases" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\aleks\PycharmProjects\IS_14_bot\Databases" />
       <recent name="C:\Users\aleks\PycharmProjects\IS_14_bot\Databases_py" />
       <recent name="C:\Users\aleks\PycharmProjects\IS_14_bot\Data" />
       <recent name="$PROJECT_DIR$/Databases" />
@@ -91,6 +95,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="creating_databases" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="IS_14_bot" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Databases_py" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\aleks\PycharmProjects\IS_14_bot\Databases_py\creating_databases.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -142,6 +167,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.creating_databases" />
       <item itemvalue="Python.bd_user_id" />
       <item itemvalue="Python.bot" />
       <item itemvalue="Python.keyboards" />
@@ -150,6 +176,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.bot" />
+        <item itemvalue="Python.creating_databases" />
         <item itemvalue="Python.keyboards" />
         <item itemvalue="Python.bd_user_id" />
         <item itemvalue="Python.translate" />
@@ -319,7 +346,14 @@
       <option name="project" value="LOCAL" />
       <updated>1670352891639</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="проверка">
+      <created>1670353977308</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1670353977308</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="UnknownFeatures">

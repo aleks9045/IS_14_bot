@@ -8,7 +8,7 @@ from keyboards import weeks_keyboard, weeks_keyboard_add, top_week_keyboard, top
 from states import WriteHomeworkTop, WriteHomeworkLower, storage
 from aiogram.dispatcher import FSMContext
 
-from Databases_py.work_with_DB import BotDB_top, BotDB_lower
+from Databases_py.work_with_DB import BotDB_top, BotDB_lower, Users_id
 from Databases_py.DB_photos import PhotosDB_top, PhotosDB_lower
 
 from Data.config import TOKEN, admins
@@ -32,6 +32,7 @@ BotDB_top = BotDB_top(r'Databases/top_week.db')
 BotDB_lower = BotDB_lower(r'Databases/lower_week.db')
 PhotosDB_top = PhotosDB_top(r'Databases/top_week_image.db')
 PhotosDB_lower = PhotosDB_lower(r'Databases/lower_week_image.db')
+Users_id = Users_id(r'Databases/users_id.db')
 
 
 bot = Bot(token=TOKEN)
@@ -53,14 +54,16 @@ async def help_me(message: types.Message):
     await message.answer("Команды:\n"
                          "/hometask - Раздел, где вы можете узнать домашнее задание.\n"
                          "/about_add - Раздел, где вы можете узнать, как добавить домашнее задание.\n"
-                         "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.\n",
+                         "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.\n"
+                         "/my_id - Команда, с помощью которой вы узнаете свой телеграм id.",
                          reply_markup=main_keyboard)
 
 
 @dp.message_handler(commands=["my_id"])
 async def my_id(message: types.Message):
     """УЗНАТЬ СВОЙ ID"""
-    await message.answer(message.from_user.id)
+    await message.answer(f'Ваш id: {message.from_user.id}')
+    Users_id.add_id(message.from_user.id, f'"{message.from_user.full_name}"')
 
 
 @dp.message_handler(commands=["about_add"])
@@ -70,14 +73,14 @@ async def about_add(message: types.Message):
 
 
 @dp.message_handler(commands=["add"])
-async def add_hometask(message: types.Message):
+async def add_dz(message: types.Message):
     """ДОБАВЛЕНИЕ ДЗ"""
     if message.from_user.id in admins:
         await message.answer("Выберите неделю для добавления дз:", reply_markup=weeks_keyboard_add)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_add' or call.data == 'lower_week_add')
-async def all_top(callback: types.CallbackQuery):
+async def choice_week_day_add(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     if callback.data == 'top_week_add':
         await bot.send_message(callback.from_user.id, 'Выберите день недели(верхняя):',
@@ -90,7 +93,7 @@ async def all_top(callback: types.CallbackQuery):
 
 
 @dp.callback_query_handler(lambda call: call.data in lst_of_days_add)
-async def all_top(callback: types.CallbackQuery):
+async def dz_input(callback: types.CallbackQuery):
     distribution = callback.data.split('_')
     time_zone.append(distribution)
     if distribution[0] == 'top':
@@ -110,7 +113,7 @@ async def all_top(callback: types.CallbackQuery):
 
 
 @dp.message_handler(state=WriteHomeworkTop.add_text)
-async def remove_keyboard(message: types.Message):
+async def load_photo(message: types.Message):
     try:
         stroka = message.text.split()
         time_zone.append(stroka[0].lower())
@@ -125,7 +128,7 @@ async def remove_keyboard(message: types.Message):
 
 
 @dp.message_handler(state=WriteHomeworkLower.add_text)
-async def remove_keyboard(message: types.Message):
+async def load_photo(message: types.Message):
     try:
         stroka = message.text.split()
         time_zone.append(stroka[0].lower())
@@ -140,18 +143,18 @@ async def remove_keyboard(message: types.Message):
 
 
 @dp.message_handler(state=WriteHomeworkTop.add_photo, commands=['empty'])
-async def remove_keyboard(message: types.Message, state: FSMContext):
+async def empty_command(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer('Успешно!')
 
 
 @dp.message_handler(state=WriteHomeworkTop.add_photo, content_types=types.ContentType.PHOTO)
-async def remove_keyboard(message: types.Message, state: FSMContext):
+async def add_photo(message: types.Message, state: FSMContext):
     try:
-        photo = message.photo[0].file_id
+        photo = message.photo[-1].file_id
         PhotosDB_top.add_photo(f'"{time_zone[0][1]}"', f'"{time_zone[1]}"', f'"{photo}"')
         time_zone.clear()
-        await message.answer("Вы успешно добавили фотографию")
+        await message.answer("Вы успешно добавили фотографию.")
         await state.finish()
     except Exception as ex_:
         print(ex_)
@@ -159,12 +162,12 @@ async def remove_keyboard(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=WriteHomeworkLower.add_photo, content_types=types.ContentType.PHOTO)
-async def remove_keyboard(message: types.Message, state: FSMContext):
+async def add_photo(message: types.Message, state: FSMContext):
     try:
-        photo = message.photo[0].file_id
+        photo = message.photo[-1].file_id
         PhotosDB_lower.add_photo(f'"{time_zone[0][1]}"', f'"{time_zone[1]}"', f'"{photo}"')
         time_zone.clear()
-        await message.answer("Вы успешно добавили фотографию")
+        await message.answer("Вы успешно добавили фотографию.")
         await state.finish()
     except Exception as ex_:
         print(ex_)
@@ -179,11 +182,11 @@ async def remove_keyboard(message: types.Message):
 
 @dp.message_handler(commands=["hometask"])
 async def hometask(message: types.Message):
-    await message.answer("Выберите тип недели", reply_markup=weeks_keyboard)
+    await message.answer("Выберите тип недели:", reply_markup=weeks_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'all_top_week' or call.data == 'all_lower_week')
-async def all_top(callback: types.CallbackQuery):
+async def all_dz(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     if callback.data == 'all_top_week':
         await bot.send_message(callback.from_user.id, BotDB_top.get_full_homework_top().replace('*', ','))
@@ -206,7 +209,7 @@ async def lower_week_command(callback_query: types.CallbackQuery):
 
 
 @dp.callback_query_handler(lambda call: call.data in lst_of_days)
-async def dz(callback: types.CallbackQuery):
+async def dz_output(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
     distribution = callback.data.split('_')
     if distribution[0] == 'top':
@@ -216,27 +219,32 @@ async def dz(callback: types.CallbackQuery):
                                    f'{BotDB_top.get_homework_top(f"{distribution[1]}")}'.replace('*', ','),
                                    reply_markup=main_keyboard)
 
+            album = types.MediaGroup()
             for photo in PhotosDB_top.check_photos(f'{distribution[1]}'):
                 if photo != '':
-                    await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
+                    album.attach_photo(photo=photo)
+            await bot.send_media_group(chat_id=callback.from_user.id, media=album)
         except Exception as ex_:
             print(ex_)
     elif distribution[0] == 'lower':
         try:
             await bot.send_message(callback.from_user.id,
-                                   f'Верхняя неделя, понедельник:\n\n\n' 
+                                   f'Нижняя неделя, понедельник:\n\n\n' 
                                    f'{BotDB_lower.get_homework_lower(f"{distribution[1]}")}'.replace('*', ','),
                                    reply_markup=main_keyboard)
 
+            album = types.MediaGroup()
             for photo in PhotosDB_lower.check_photos(f'{distribution[1]}'):
                 if photo != '':
-                    await bot.send_photo(chat_id=callback.from_user.id, photo=photo)
+                    album.attach_photo(photo=photo)
+            await bot.send_media_group(chat_id=callback.from_user.id, media=album)
         except Exception as ex_:
             print(ex_)
 
 
 async def main():
-    await dp.bot.send_message(chat_id=admins[0], text='Бот запущен.')
+    for id_ in admins:
+        await dp.bot.send_message(chat_id=id_, text='Бот запущен.')
     await dp.start_polling(bot)
 
 try:
