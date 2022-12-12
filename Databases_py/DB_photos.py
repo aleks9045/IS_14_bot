@@ -1,5 +1,6 @@
 import sqlite3
 
+lst_of_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
 
 class PhotosDB_top:
 
@@ -13,20 +14,29 @@ class PhotosDB_top:
         return self.connection.commit()
 
     def check_photos(self, week_day):
-        photo1 = ''
-        photo2 = ''
-        photo3 = ''
+        lst_of_photo = []
         self.cursor.execute(f"SELECT * FROM {week_day}")
         result = self.cursor.fetchone()
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         if lst[0] != 'None':
-            photo1 = lst[0]
+            lst_of_photo.append(lst[0])
         if lst[1] != 'None':
-            photo2 = lst[1]
+            lst_of_photo.append(lst[1])
         if lst[2] != 'None':
-            photo3 = lst[2]
-        return [photo1, photo2, photo3]
+            lst_of_photo.append(lst[2])
+        return lst_of_photo
+
+    def all_photos(self):
+        photos_lst = []
+        for i in lst_of_days:
+            self.cursor.execute(f"SELECT * FROM {i}")
+            result = self.cursor.fetchone()
+            a = str(result)
+            lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
+            for j in lst:
+                photos_lst.append(j)
+        return photos_lst
 
 
 class PhotosDB_lower:
@@ -41,17 +51,26 @@ class PhotosDB_lower:
         return self.connection.commit()
 
     def check_photos(self, week_day):
-        photo1 = ''
-        photo2 = ''
-        photo3 = ''
+        lst_of_photo = []
         self.cursor.execute(f"SELECT * FROM {week_day}")
         result = self.cursor.fetchone()
         a = str(result)
         lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
         if lst[0] != 'None':
-            photo1 = lst[0]
+            lst_of_photo.append(lst[0])
         if lst[1] != 'None':
-            photo2 = lst[1]
+            lst_of_photo.append(lst[1])
         if lst[2] != 'None':
-            photo3 = lst[2]
-        return [photo1, photo2, photo3]
+            lst_of_photo.append(lst[2])
+        return lst_of_photo
+
+    def all_photos(self):
+        photos_lst = []
+        for i in lst_of_days:
+            self.cursor.execute(f"SELECT * FROM {i}")
+            result = self.cursor.fetchone()
+            a = str(result)
+            lst = a.replace('(', '').replace(')', '').replace("'", '').split(', ')
+            for j in lst:
+                photos_lst.append(j)
+        return photos_lst

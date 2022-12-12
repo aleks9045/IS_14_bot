@@ -45,14 +45,14 @@ async def start(message: types.Message):
     await message.answer("Вас приветствует бот, созданный, чтобы говорить вам ваше домашнее задание. "
                          "Введите /help , чтобы узнать функционал бота и открыть клавиатуру с командами.\n"
                          "Все предложения и замечания, касающиеся бота писать @aleks_9045 и @Shuv1_Wolf\n\n"
-                         "ver. 1.1")
+                         "ver. 1.15")
 
 
 @dp.message_handler(commands=["help"])
 async def help_me(message: types.Message):
     """ОБЩАЯ ИНФА"""
     await message.answer("Команды:\n"
-                         "/hometask - Раздел, где вы можете узнать домашнее задание.\n"
+                         "/dz - Раздел, где вы можете узнать домашнее задание.\n"
                          "/about_add - Раздел, где вы можете узнать, как добавить домашнее задание.\n"
                          "/remove_keyboard - Команда, которая прячет дополнительную клавиатуру.\n"
                          "/my_id - Команда, с помощью которой вы узнаете свой телеграм id.",
@@ -77,6 +77,8 @@ async def add_dz(message: types.Message):
     """ДОБАВЛЕНИЕ ДЗ"""
     if message.from_user.id in admins:
         await message.answer("Выберите неделю для добавления дз:", reply_markup=weeks_keyboard_add)
+    else:
+        await message.answer("Вы не можете добавлять дз.")
 
 
 @dp.callback_query_handler(lambda call: call.data == 'top_week_add' or call.data == 'lower_week_add')
@@ -148,6 +150,12 @@ async def empty_command(message: types.Message, state: FSMContext):
     await message.answer('Успешно!')
 
 
+@dp.message_handler(state=WriteHomeworkLower.add_photo, commands=['empty'])
+async def empty_command(message: types.Message, state: FSMContext):
+    await state.finish()
+    await message.answer('Успешно!')
+
+
 @dp.message_handler(state=WriteHomeworkTop.add_photo, content_types=types.ContentType.PHOTO)
 async def add_photo(message: types.Message, state: FSMContext):
     try:
@@ -180,18 +188,33 @@ async def remove_keyboard(message: types.Message):
     await message.answer("Клавиатура скрыта.", reply_markup=types.ReplyKeyboardRemove())
 
 
-@dp.message_handler(commands=["hometask"])
-async def hometask(message: types.Message):
+@dp.message_handler(commands=["dz"])
+async def dz(message: types.Message):
     await message.answer("Выберите тип недели:", reply_markup=weeks_keyboard)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'all_top_week' or call.data == 'all_lower_week')
 async def all_dz(callback: types.CallbackQuery):
     await bot.answer_callback_query(callback.id)
-    if callback.data == 'all_top_week':
-        await bot.send_message(callback.from_user.id, BotDB_top.get_full_homework_top().replace('*', ','))
-    elif callback.data == 'all_lower_week':
-        await bot.send_message(callback.from_user.id, BotDB_lower.get_full_homework_lower().replace('*', ','))
+    try:
+        if callback.data == 'all_top_week':
+            await bot.send_message(callback.from_user.id, BotDB_top.get_full_homework_top().replace('*', ','))
+
+            album = types.MediaGroup()
+            for photo in PhotosDB_top.all_photos():
+                if photo != 'None':
+                    album.attach_photo(photo=photo)
+            await bot.send_media_group(chat_id=callback.from_user.id, media=album)
+        elif callback.data == 'all_lower_week':
+            await bot.send_message(callback.from_user.id, BotDB_lower.get_full_homework_lower().replace('*', ','))
+
+            album = types.MediaGroup()
+            for photo in PhotosDB_lower.all_photos():
+                if photo != 'None':
+                    album.attach_photo(photo=photo)
+            await bot.send_media_group(chat_id=callback.from_user.id, media=album)
+    except Exception as ex_:
+        print(ex_)
 
 
 @dp.callback_query_handler(text='top_week')
@@ -219,11 +242,12 @@ async def dz_output(callback: types.CallbackQuery):
                                    f'{BotDB_top.get_homework_top(f"{distribution[1]}")}'.replace('*', ','),
                                    reply_markup=main_keyboard)
 
-            album = types.MediaGroup()
-            for photo in PhotosDB_top.check_photos(f'{distribution[1]}'):
-                if photo != '':
-                    album.attach_photo(photo=photo)
-            await bot.send_media_group(chat_id=callback.from_user.id, media=album)
+            if PhotosDB_top.check_photos(f'{distribution[1]}'):
+                album = types.MediaGroup()
+                for photo in PhotosDB_top.check_photos(f'{distribution[1]}'):
+                    if photo != '':
+                        album.attach_photo(photo=photo)
+                await bot.send_media_group(chat_id=callback.from_user.id, media=album)
         except Exception as ex_:
             print(ex_)
     elif distribution[0] == 'lower':
@@ -233,11 +257,12 @@ async def dz_output(callback: types.CallbackQuery):
                                    f'{BotDB_lower.get_homework_lower(f"{distribution[1]}")}'.replace('*', ','),
                                    reply_markup=main_keyboard)
 
-            album = types.MediaGroup()
-            for photo in PhotosDB_lower.check_photos(f'{distribution[1]}'):
-                if photo != '':
-                    album.attach_photo(photo=photo)
-            await bot.send_media_group(chat_id=callback.from_user.id, media=album)
+            if PhotosDB_top.check_photos(f'{distribution[1]}'):
+                album = types.MediaGroup()
+                for photo in PhotosDB_top.check_photos(f'{distribution[1]}'):
+                    if photo != '':
+                        album.attach_photo(photo=photo)
+                await bot.send_media_group(chat_id=callback.from_user.id, media=album)
         except Exception as ex_:
             print(ex_)
 
@@ -246,6 +271,8 @@ async def main():
     for id_ in admins:
         await dp.bot.send_message(chat_id=id_, text='Бот запущен.')
     await dp.start_polling(bot)
+    for id_ in admins:
+        await dp.bot.send_message(chat_id=id_, text='Бот остановлен.')
 
 try:
     if __name__ == "__main__":

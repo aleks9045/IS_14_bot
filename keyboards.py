@@ -15,7 +15,7 @@ main_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 keyboard_remove = ReplyKeyboardMarkup(resize_keyboard=True)
 add_hometask_info = ReplyKeyboardMarkup(resize_keyboard=True)
 
-main_hometask = KeyboardButton('/hometask')
+main_dz = KeyboardButton('/dz')
 keyboard_remove_command = KeyboardButton('/remove_keyboard')
 add_hometask_info_command = KeyboardButton('/about_add')
 
@@ -78,4 +78,4 @@ weeks_keyboard.row(all_lower_week_command, all_top_week_command)
 
 weeks_keyboard_add.add(top_week_command_add, lower_week_command_add)
 
-main_keyboard.add(main_hometask, add_hometask_info_command, keyboard_remove_command)
+main_keyboard.add(main_dz, add_hometask_info_command, keyboard_remove_command)
